@@ -1,0 +1,154 @@
+
+INTENT "chang, a changlog manager and logger program"
+
+GOAL "MAIN BODY" {
+    IF argc < 3{
+        PRINT "Use: chang <command>"
+        PRINT "Commands: log, init, help, bump"
+        BREAK
+    }
+    VERSA_VERSION = "0.0.1"
+    IF argv[1]=="--version"{
+        PRINT VERSA_VERSION
+    }
+    IF argv[1]== "help"{
+        GOAL "print help menu"
+    }
+
+    IF argv[1] == "init"{
+    STRING DATE = get_date()
+
+    WRITE_NEW_FILE("CHANGELOG.md") with CONTENT{
+        ```markdown
+        # Changelog
+        All notable changes to this project will be documented in this file.
+        The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+        
+        ## v0.0.0 $${DATE}$$
+
+        Added:
+
+        Removed:
+
+        Improved/Fixed:
+
+        ```
+    }
+
+    IF argv[1]=="new"{
+        IF argc < 3{
+            PRINT "Uage: chang new <version>"
+            PRINT "Example: chang new 0.2.1"
+            BREAK
+        }
+        input_version = argv[2]
+        STRING DATE = get_date()
+        ENSURE "text is written at the beggining of the file and below the header"
+        CONSTRAIN "Text must be written below this string:
+         '# Changelog
+        All notable changes to this project will be documented in this file.
+        The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).'
+        "
+        WRITE_TO_FILE("CHANGELOG.md") with CONTENT{
+            ```markdown
+            ## v$${input_version}$$ $${DATE}$$
+
+            Added:
+
+            Removed:
+
+            Improved/Fixed:
+
+           
+            ```
+        }
+
+    }
+    IF argv[1]== "log"{
+        IF argc < 3 {
+            PRINT "Use: chang log <flag> <message> <version>"
+            PRINT "Example: chang log -a 'added login' 0.0.1"
+            PRINT "Flags: -a = added,\n -r = removed,\n, -f = fixed"
+            
+            BREAK
+        }
+        IF argv[2] == "-a" AND argc == 4{ COM=user does not specify a version, so we use the latest one
+            STRING msg = argv[3]
+            INTENT "Log a message in the latest version section, in the added section"{
+                STRING Current_Log = READ_FILE("CHANGELOG.md")
+
+                GOAL "Insert bullet point"{
+                    ENSURE "Do not modify old versions."
+                    ENSURE "Place the message under the 'Added' subsection of the TOPMOST version block."
+                    INSERT msg INTO current_log
+                }
+            }
+
+        }ELSE IF argv[2] == "-a" AND argc == 5{
+            STRING msg = argv[3]
+            STRING version = argv[4]
+
+            INTENT "Log a message in a specific version section, in the added section"{
+                STRING Current_Log = READ_FILE("CHANGELOG.md")
+                GOAL "Insert bullet point"{
+                    ENSURE "Do not modify old versions."
+                    ENSURE "Place msg under the 'Added' subsection of the specified version block."
+                    INSERT msg INTO current_log
+                }
+            }
+        }
+
+        IF argv[2] == "-r" AND argc == 4{
+            STRING msg = argv[3]
+
+            INTENT "Log a message in the latest version section, in removed section"{
+                STRING Current_Log = READ_FILE("CHANGELOG.md")
+                GOAL "Insert bullet point"{
+                    ENSURE "Do not modify old versions."
+                    ENSURE "Place message under the 'Removed' subsection of the TOPMOST version block."
+                    INSERT msg INTO current_log
+                }
+            }
+        
+        }ELSE IF argv[2] == "-r" AND argc == 5{
+            STRING msg = argv[3]
+            STRING version = argv[4]
+
+            INTENT "Log a message in a specific version section, in the removed section"{
+                STRING Current_Log = READ_FILE("CHANGELOG.md")
+                GOAL "Insert bullet point"{
+                    ENSURE "Do not modify old versions."
+                    ENSURE "Place msg under the 'Removed' subsection of the specified version block."
+                    INSERT msg INTO current_log
+                }
+            }
+        }
+
+
+        IF argv[2] == "-f" AND argc == 4{
+            STRING msg = argv[3]
+
+            INTENT "Log a message in the latest version section, in fixed section"{
+                STRING Current_Log = READ_FILE("CHANGELOG.md")
+                GOAL "Insert bullet point"{
+                    ENSURE "Do not modify old versions."
+                    ENSURE "Place message under the 'Fixed' substection of the TOPMOST version block"
+                    INSERT msg INTO current_log
+                }
+            }
+
+        }ELSE IF argv[2] == "-f" AND argc == 5{
+            STRING msg = argv[3]
+            STRING version = argv[4]
+
+            INTENT "Log a message in a specific version section, in the fixed section"{
+                STRING Current_Log = READ_FILE("CHANGELOG.md")
+                GOAL "Insert bullet point"{
+                    ENSURE "Do not modify old versions."
+                    ENSURE "Place msg under the 'fixed' subsection of the specified version block."
+                    INSERT msg INTO current_log
+                }
+            }
+        }
+    }
+}
