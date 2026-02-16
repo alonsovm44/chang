@@ -1,15 +1,26 @@
 # Chang
 Chang is a simple, easy to use, practical CLI tool written in Glupe to keep track of changes in your project. It is not meant to replace git, but to work along side it. 
 
+Given the nature of glupe files, `main.acn`can be compiled to C, C++, Rust, Go, Python or any supported language by Glupe.
+
 ## Setup
 1. Download Chang.exe and set it in C:\chang\chang.exe
-1. Or build from source with `glupe main.acn -o chang.exe` 
+1. Or build from source with `glupe main.acn -o chang.exe -target-lang` 
 2. Set Chang to path
 
 ## How to use
 1. Begin by running:
 `chang init`
 This creates a CHANGELOG.md file with a starting template
+```
+## v0.0.0 2026-02-13
+
+Added:
+
+Removed:
+
+Improved/Fixed:
+```
 
 2. `chang help` 
 This outputs
