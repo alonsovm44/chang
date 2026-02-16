@@ -4,7 +4,7 @@ INTENT "chang, a changlog manager and logger program"
 GOAL "MAIN BODY" {
     IF argc < 3{
         PRINT "Use: chang <command>"
-        PRINT "Commands: log, init, help, bump"
+        PRINT "Commands: log, init, help, new"
         BREAK
     }
     VERSA_VERSION = "0.0.1"
